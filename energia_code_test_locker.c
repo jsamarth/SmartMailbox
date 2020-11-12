@@ -72,6 +72,12 @@ void loop(){
 				// Unlock the box
 				digitalWrite(LOCK_PIN, LOW);
 
+				// Wait for # key to lock again
+				while(getKey()!='#');
+				delay(1000);
+				Serial.println("Locked again!");
+				digitalWrite(LOCK_PIN, HIGH);				
+
 				// // Ring out the alarm for a second
 				// analogWrite(SPEAKER_PIN, 130);
 				// delay(1000);
