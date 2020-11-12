@@ -140,9 +140,12 @@ boolean checkIfValid(char array[]) {
 	for(int i = 0; i < 3; i++) {
 		for(int j = 0; j < 6; j++) {
 			if(array[j] != acceptable_codes[i][j])
-				continue;
-			if(j == 5)
+				break;
+			if(j == 5) {
+				Serial.print(i);
+				Serial.println(" is the correct code");
 				return true;
+			}
 		}
 	}
 
