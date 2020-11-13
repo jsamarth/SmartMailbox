@@ -50,18 +50,21 @@ byte cpin[COLS] = {MEMBRANE_PIN_4, MEMBRANE_PIN_3, MEMBRANE_PIN_2, MEMBRANE_PIN_
 
 // STATE ASSIGNMENT
 int type_count = 0;
-char acceptable_codes[3][6] = {
-  {'1','1','1','1','1','1'}, 
-  {'1','2','3','4','5','6'}, 
-  {'4','4','4','4','4','4'}
-};
+// char acceptable_codes[3][6] = {
+//   {'1','1','1','1','1','1'}, 
+//   {'1','2','3','4','5','6'}, 
+//   {'4','4','4','4','4','4'}
+// };
+std::vector<String> acceptable_codes(1, "111111");
+// acceptable_codes.push_back("111111");
+
 const int TIMER_MAX = 20000;
 int timer = TIMER_MAX;
 String current_string = String(6);
 int curr_state = RST_INPUT;
 
 boolean checkIfValid() {
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < acceptable_codes.size(); i++) {
     for(int j = 0; j < 6; j++) {
       if(current_string[j] != acceptable_codes[i][j])
         break;
