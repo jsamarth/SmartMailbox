@@ -3,6 +3,15 @@
 #endif
 #include <WiFi.h>
 
+#define BUTTON_DEBOUNCE_TIME 1000
+
+// FSM STATES
+#define START 0
+#define RST_INPUT 1
+#define ACCPT_CODE 2
+#define CORRECT_CODE 3
+#define WRONG_CODE 4
+
 // WIFI SETUP
 char ssid[] = "wifi-sj";
 char password[] = "fenderbender10";
@@ -27,10 +36,10 @@ const byte ROWS = 4; //four rows
 const byte COLS = 4; //four columns
 //define the symbols on the buttons of the keypads
 char keymap[ROWS][COLS] = {
-	{'1','2','3','A'},
-	{'4','5','6','B'},
-	{'7','8','9','C'},
-	{'*','0','#','D'}
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
 };
 //connect to the row pinouts of the keypad
 byte rpin[ROWS] = {MEMBRANE_PIN_8, MEMBRANE_PIN_7, MEMBRANE_PIN_6, MEMBRANE_PIN_5};
@@ -41,56 +50,67 @@ byte cpin[COLS] = {MEMBRANE_PIN_4, MEMBRANE_PIN_3, MEMBRANE_PIN_2, MEMBRANE_PIN_
 // STATE ASSIGNMENT
 int type_count = 0;
 char acceptable_codes[3][6] = {
-	{'1','1','1','1','1','1'}, 
-	{'1','2','3','4','5','6'}, 
-	{'4','4','4','4','4','4'}
+  {'1','1','1','1','1','1'}, 
+  {'1','2','3','4','5','6'}, 
+  {'4','4','4','4','4','4'}
 };
-const int TIMER_MAX = 100000000;
+const int TIMER_MAX = 10000000;
 int timer = TIMER_MAX;
 char current_array[6];
+int curr_state = RST_INPUT;
 
-boolean checkIfValid(char array[]) {
-	for(int i = 0; i < 3; i++) {
-		for(int j = 0; j < 6; j++) {
-			if(array[j] != acceptable_codes[i][j])
-				continue;
-			if(j == 5)
-				return true;
-		}
-	}
+boolean checkIfValid() {
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 6; j++) {
+      if(current_array[j] != acceptable_codes[i][j])
+        break;
+      if(j == 5) {
+        Serial.print(i);
+        Serial.println(" is the correct code");
+        return true;
+      }
+    }
+  }
 
-	return false;
+  return false;
 }
 
-char getKey()
-{
-	char key=0;
-	for(int i=0;i<4;i++)
-	{
-		digitalWrite(rpin[i],HIGH);
-		for(int j=0;j<4;j++)
-		{
-			if (digitalRead(cpin[j])==HIGH)
-				key=keymap[i][j];
-		}
-		digitalWrite(rpin[i],LOW);
-	}
-	return key;
+char getKey() {
+  char key=0;
+  for(int i=0;i<4;i++)
+  {
+    digitalWrite(rpin[i],HIGH);
+    for(int j=0;j<4;j++)
+    {
+      if (digitalRead(cpin[j])==HIGH)
+        key=keymap[i][j];
+    }
+    digitalWrite(rpin[i],LOW);
+  }
+  return key;
 }
 
 void printWifiStatus() {
-	// print the SSID of the network you're attached to:
-	Serial.print("SSID: ");
-	Serial.println(WiFi.SSID());
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
 
-	// print your WiFi shield's IP address:
-	IPAddress ip = WiFi.localIP();
-	Serial.print("IP Address: ");
-	Serial.println(ip);
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
 
-	// print the received signal strength:
-	long rssi = WiFi.RSSI();
-	Serial.print("signal strength (RSSI):");
-	Serial.print(rssi);
-	Serial.println(" dBm");
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
+}
+
+void printCurrArray() {
+  Serial.println("Current array ... ");
+  for(int i = 0; i < 6; i++) {
+    Serial.print(current_array[i]);
+  }
+  Serial.println();
 }
