@@ -110,7 +110,7 @@ void loop() {
 				if(checkIfValid()) {
 					Serial.println("Correct code!");
 					curr_state = CORRECT_CODE;
-					client.println("UNLOCKED " + current_string);
+					client.println("UNLCKD " + current_string);
 				}
 				else {
 					curr_state = WRONG_CODE;
@@ -139,13 +139,13 @@ void loop() {
 				Serial.println("Locking again!");
 				curr_state = RST_INPUT;
 				client.println("LOCKED");
-				// Locking again
+				findAndRemoveCurrentString();
 			}
 		}
 
 		else if(curr_state == WRONG_CODE) {
 			Serial.println("Wrong code!");
-			client.println("WRONG_CODE " + current_string);
+			client.println("WRNGCD " + current_string);
 			curr_state = RST_INPUT;
 		}
 	}

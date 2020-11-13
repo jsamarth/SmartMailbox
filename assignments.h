@@ -94,6 +94,15 @@ char getKey() {
   return key;
 }
 
+void findAndRemoveCurrentString() {
+  for (std::vector<String>::iterator it = acceptable_codes.begin() ; it != acceptable_codes.end(); ++it) {
+    if(current_string.equals(*it)) {
+      acceptable_codes.erase(it);
+      break;
+    }
+  }
+}
+
 void printWifiStatus() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
