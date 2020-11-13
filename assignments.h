@@ -2,6 +2,7 @@
 #include <SPI.h>
 #endif
 #include <WiFi.h>
+#include <vector>
 
 #define BUTTON_DEBOUNCE_TIME 1000
 
@@ -54,19 +55,19 @@ char acceptable_codes[3][6] = {
   {'1','2','3','4','5','6'}, 
   {'4','4','4','4','4','4'}
 };
-const int TIMER_MAX = 10000000;
+const int TIMER_MAX = 20000;
 int timer = TIMER_MAX;
-char current_array[6];
+String current_string = String(6);
 int curr_state = RST_INPUT;
 
 boolean checkIfValid() {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 6; j++) {
-      if(current_array[j] != acceptable_codes[i][j])
+      if(current_string[j] != acceptable_codes[i][j])
         break;
       if(j == 5) {
-        Serial.print(i);
-        Serial.println(" is the correct code");
+        // Serial.print(i);
+        // Serial.println(" is the correct code");
         return true;
       }
     }
@@ -109,8 +110,6 @@ void printWifiStatus() {
 
 void printCurrArray() {
   Serial.println("Current array ... ");
-  for(int i = 0; i < 6; i++) {
-    Serial.print(current_array[i]);
-  }
+  Serial.println(current_string);
   Serial.println();
 }

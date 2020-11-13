@@ -68,7 +68,7 @@ void loop() {
 			// char thisChar = client.read();
 			String clientInp = "";
 			while (client.available() > 0)
-				clientInp += client.read();
+				clientInp += (char)client.read();
 			// echo the bytes back to the client:
 			server.println(clientInp);
 			// echo the bytes to the server as well:
@@ -77,8 +77,9 @@ void loop() {
 
 		if(curr_state == RST_INPUT) {
 			timer = TIMER_MAX;
-			for(int i = 0; i < 6; i++)
-				current_array[i] = '\0';
+			// for(int i = 0; i < 6; i++)
+				// current_string[i] = '\0';
+			current_string = "";
 			type_count = 0;
 
 			// lock enabled
@@ -92,7 +93,7 @@ void loop() {
 
 				curr_state = ACCPT_CODE;
 				type_count += 1;
-				current_array[0] = c;
+				current_string = String(c);
 				printCurrArray();
 			}
 		}
@@ -123,7 +124,7 @@ void loop() {
 					Serial.print(c);
 					Serial.println(" was typed");
 
-					current_array[type_count] = c;
+					current_string += c;
 					type_count += 1;
 					printCurrArray();
 				}
