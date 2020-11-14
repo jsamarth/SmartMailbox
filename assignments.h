@@ -55,8 +55,8 @@ int type_count = 0;
 //   {'1','2','3','4','5','6'}, 
 //   {'4','4','4','4','4','4'}
 // };
-std::vector<String> acceptable_codes(1, "111111");
-// acceptable_codes.push_back("111111");
+// std::vector<String> acceptable_codes(1, "111111");
+std::vector<String> acceptable_codes();
 
 const int TIMER_MAX = 20000;
 int timer = TIMER_MAX;

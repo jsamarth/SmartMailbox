@@ -73,6 +73,16 @@ void loop() {
 			server.println(clientInp);
 			// echo the bytes to the server as well:
 			// Serial.println(clientInp);
+
+			if(clientInp.substring(0,2) == "ND") {
+				Serial.println("adding " + clientInp.substring(3,9));
+				acceptable_codes.push_back(clientInp.substring(3,9));
+			} 
+
+			if(clientInp.substring(0,4) == "OPEN") {
+				Serial.println("Open command from app.");
+				curr_state = CORRECT_CODE;
+			} 
 		}
 
 		if(curr_state == RST_INPUT) {
@@ -111,6 +121,7 @@ void loop() {
 					Serial.println("Correct code!");
 					curr_state = CORRECT_CODE;
 					client.println("UNLCKD " + current_string);
+					findAndRemoveCurrentString();
 				}
 				else {
 					curr_state = WRONG_CODE;
@@ -139,7 +150,6 @@ void loop() {
 				Serial.println("Locking again!");
 				curr_state = RST_INPUT;
 				client.println("LOCKED");
-				findAndRemoveCurrentString();
 			}
 		}
 
