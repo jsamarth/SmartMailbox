@@ -4,8 +4,12 @@ void setup() {
 	//Initialize serial and wait for port to open:
 	Serial.begin(115200);
 
-	pinMode(RED_LED, OUTPUT);
-	pinMode(GREEN_LED, OUTPUT);
+	pinMode(YELLOW_LED_PIN, OUTPUT);
+	pinMode(GREEN_LED_PIN, OUTPUT);
+	pinMode(BLUE_LED_PIN, OUTPUT);
+
+	pinMode(SPEAKER_PIN, OUTPUT);
+	pinMode(LOCK_PIN, OUTPUT);
 
 	for(int i=0;i<4;i++)
 	{
@@ -17,6 +21,7 @@ void setup() {
 
 	// attempt to connect to Wifi network:
 	Serial.print("Attempting to connect to Network named: ");
+	digitalWrite(BLUE_LED_PIN, HIGH);
 	// print the network name (SSID);
 	Serial.println(ssid); 
 	// Connect to WPA/WPA2 network. Change this line if using open or WEP network:
@@ -25,7 +30,13 @@ void setup() {
 	// print dots while we wait to connect
 		Serial.print(".");
 		delay(300);
+
+		// digitalWrite(BLUE_LED_PIN, HIGH);
+		// delay(200);
+		// digitalWrite(BLUE_LED_PIN, LOW);
 	}
+
+	digitalWrite(BLUE_LED_PIN, LOW);
 
 	Serial.println("\nYou're connected to the network");
 	Serial.println("Waiting for an ip address");
@@ -34,6 +45,7 @@ void setup() {
 		// print dots while we wait for an ip addresss
 		Serial.print(".");
 		delay(300);
+		// digitalWrite()
 	}
 
 	Serial.println("\nIP Address obtained");
@@ -47,11 +59,15 @@ void setup() {
 
 void loop() {
 	// wait for a new client:
+	// digitalWrite(YELLOW_LED_PIN, LOW);
+	// digitalWrite(GREEN_LED_PIN, LOW);
 	WiFiClient client = server.available();
 
 	// when the client sends the first byte, say hello:
 	if (client) {
-		digitalWrite(GREEN_LED, HIGH);
+		digitalWrite(BLUE_LED_PIN, HIGH);
+		// digitalWrite(YELLOW_LED_PIN, LOW);
+		// digitalWrite(GREEN_LED_PIN, LOW);
 		// Serial.println(curr_state);
 
 		// When the client connects for the first time
@@ -70,7 +86,7 @@ void loop() {
 			while (client.available() > 0)
 				clientInp += (char)client.read();
 			// echo the bytes back to the client:
-			server.println(clientInp);
+			
 			// echo the bytes to the server as well:
 			// Serial.println(clientInp);
 
@@ -87,17 +103,23 @@ void loop() {
 
 		if(curr_state == RST_INPUT) {
 			timer = TIMER_MAX;
-			// for(int i = 0; i < 6; i++)
-				// current_string[i] = '\0';
 			current_string = "";
 			type_count = 0;
 
 			// lock enabled
 			digitalWrite(LOCK_PIN, LOW);
+			
+			digitalWrite(YELLOW_LED_PIN, HIGH);
+
+			digitalWrite(GREEN_LED_PIN, LOW);
 
 			char c = getKey();
 			if(c) {
 				delay(BUTTON_DEBOUNCE_TIME);
+
+				// Beep to indicate button click
+				flash(SPEAKER_PIN, 1);
+
 				Serial.print(c);
 				Serial.println(" was typed");
 
@@ -111,9 +133,13 @@ void loop() {
 		else if(curr_state == ACCPT_CODE) {
 			timer -= 1;
 
+			digitalWrite(YELLOW_LED_PIN, LOW);
+
 			if(timer < 0) {
 				Serial.println("Resetting!");
 				curr_state = RST_INPUT;
+
+				flash(YELLOW_LED_PIN, 3);
 			}
 
 			if(type_count == 6) {
@@ -132,6 +158,10 @@ void loop() {
 				char c = getKey();
 				if(c) {
 					delay(BUTTON_DEBOUNCE_TIME);
+
+					// Beep to indicate button click
+					flash(SPEAKER_PIN, 1);
+
 					Serial.print(c);
 					Serial.println(" was typed");
 
@@ -144,23 +174,36 @@ void loop() {
 		}
 
 		else if(curr_state == CORRECT_CODE) {
+
+			digitalWrite(LOCK_PIN, HIGH);
+
+			flash(SPEAKER_PIN, 1);
+
+			digitalWrite(GREEN_LED_PIN, HIGH);
+
 			char c = getKey();
 			if(c=='#') {
 				delay(BUTTON_DEBOUNCE_TIME);
+
 				Serial.println("Locking again!");
 				curr_state = RST_INPUT;
 				client.println("LOCKED");
+				flash(YELLOW_LED_PIN, 3);
 			}
 		}
 
 		else if(curr_state == WRONG_CODE) {
+			flash(YELLOW_LED_PIN, 3);
+
 			Serial.println("Wrong code!");
 			client.println("WRNGCD " + current_string);
 			curr_state = RST_INPUT;
 		}
 	}
 	else {
-		digitalWrite(RED_LED, LOW);
+		digitalWrite(BLUE_LED_PIN, LOW);
+		digitalWrite(GREEN_LED_PIN, LOW);
+		digitalWrite(YELLOW_LED_PIN, LOW);
 		if (alreadyConnected) Serial.write("Client disconnected!\n");
 		alreadyConnected = false;
 

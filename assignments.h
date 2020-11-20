@@ -14,15 +14,17 @@
 #define WRONG_CODE 4
 
 // WIFI SETUP
-char ssid[] = "wifi-sj";
-char password[] = "fenderbender10";
+char ssid[] = "304C-201";
+char password[] = "224Illini7701278";
 WiFiServer server(23);
 boolean alreadyConnected = false; // whether or not the client was connected previously
 
 // PIN ASSIGNMENTS
-const int LED_PIN = GREEN_LED;
-const int LOCK_PIN = 3;
-const int SPEAKER_PIN = 31; // probably requires analogWrite
+const int YELLOW_LED_PIN = 31;
+const int BLUE_LED_PIN = 17;
+const int GREEN_LED_PIN = 19;
+const int LOCK_PIN = 11;
+const int SPEAKER_PIN = 32; // probably requires analogWrite
 const int MEMBRANE_PIN_1 = 2;
 const int MEMBRANE_PIN_2 = 3;
 const int MEMBRANE_PIN_3 = 4;
@@ -56,9 +58,9 @@ int type_count = 0;
 //   {'4','4','4','4','4','4'}
 // };
 // std::vector<String> acceptable_codes(1, "111111");
-std::vector<String> acceptable_codes();
+std::vector<String> acceptable_codes;
 
-const int TIMER_MAX = 20000;
+const int TIMER_MAX = 15000;
 int timer = TIMER_MAX;
 String current_string = String(6);
 int curr_state = RST_INPUT;
@@ -124,4 +126,13 @@ void printCurrArray() {
   Serial.println("Current array ... ");
   Serial.println(current_string);
   Serial.println();
+}
+
+void flash(int pin, int times) {
+  for(int i = 0; i < times; i++) {
+    digitalWrite(pin, HIGH);
+    delay(200);
+    digitalWrite(pin, LOW);
+    delay(200);
+  }
 }
